@@ -42,17 +42,17 @@
   :group 'maccalfw-org)
 
 (defcustom maccalfw-org-default-calendars '()
-  "List of calendars to fetch by default when writing to \='org-mode' file."
+  "List of calendars to fetch by default when writing to `org-mode' file."
   :type '(repeat string)
   :group 'maccalfw-org)
 
 (defcustom maccalfw-org-default-start-date-offset -7
-  "Number of days in the past to fetch date from to write to \='org-mode' file."
+  "Number of days in the past to fetch date from to write to `org-mode' file."
   :type 'integer
   :group 'maccalf-org)
 
 (defcustom maccalfw-org-default-end-date-offset 30
-  "Number of days in the past to fetch date from to write to \='org-mode' file."
+  "Number of days in the past to fetch date from to write to `org-mode' file."
   :type 'integer
   :group 'maccalf-org)
 
@@ -66,7 +66,7 @@
           (nth 5 decoded)))) ; year
 
 (defun maccalfw-org--encode-calfw-date-time (date time)
-  "Parse calfw DATE and TIME from event and return \='encode-time' encoded value."
+  "Parse calfw DATE and TIME from event and return `encode-time' encoded value."
   (let* ((date (list (nth 1 date) (nth 0 date) (nth 2 date)))
          (time (list 0 (nth 1 time) (nth 0 time)))
          (date-time (append time date))
@@ -103,7 +103,7 @@
   (mapcar (lambda (event) (maccalfw-org--event-to-org-entry event level)) (cdr event-seq)))
 
 (defun maccalfw-org--generate-org-for-cals (calendars start-date end-date)
-  "Create multiple org entries for \='maccalfw' CALENDARS containing events in START-DATE to END-DATE range."
+  "Create multiple org entries for `maccalfw' CALENDARS containing events in START-DATE to END-DATE range."
   (mapcar
    (lambda (calendar)
      (let* (
@@ -115,12 +115,12 @@
    calendars))
 
 (defun maccalfw-org-for-cal-names (calendar-names start-date end-date)
-  "Create multiple org entries for \='maccalf' CALENDAR-NAMES containing events in START-DATE to END-DATE range."
+  "Create multiple org entries for `maccalf' CALENDAR-NAMES containing events in START-DATE to END-DATE range."
   (maccalfw--load-module)
   (string-join (maccalfw-org--generate-org-for-cals (maccalfw-get-calendars-by-name calendar-names) start-date end-date) "\n\n"))
 
 (defun maccalfw-org-write-file (&optional calendar-names start-date end-date)
-  "Write an org file to \='maccalfw-org-output-file' containing entries for events in CALENDAR-NAMES in the START-DATE to END-DATE range."
+  "Write an org file to `maccalfw-org-output-file' containing entries for events in CALENDAR-NAMES in the START-DATE to END-DATE range."
   (let* ((calendar-names (or calendar-names maccalfw-org-default-calendars))
          (start-date (or start-date (maccalfw-org--get-date-offset maccalfw-org-default-start-date-offset)))
          (end-date (or end-date (maccalfw-org--get-date-offset maccalfw-org-default-end-date-offset)))
