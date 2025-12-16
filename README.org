@@ -9,6 +9,11 @@
 This package provides a list of commands to be able to fetch, add, modify and
 remove events to Apple's Calendar app.
 
+* Purpose of Fork
+The purpose of [[https://github.com/FrederickGeek8/][my]] personal fork is to add some org-mode/agenda functionality to the [[https://github.com/haji-ali/maccalfw][original maccalfw project]]. /I/ deemed this functionality to be out-of-scope of the original project, although someone could pull in my changes in the future if they wanted to.
+
+*Do not rely on this fork.* I am not planning on maintaining it for anyone except for myself. I am not trying to replace the original project. Forking it was just easier for me.
+
 * Installation
 =maccalfw= can be installed with the following =use-package= command, assuming
 that you have straight installed.
