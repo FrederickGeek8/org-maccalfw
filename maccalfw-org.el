@@ -43,7 +43,7 @@
 
 (defcustom maccalfw-org-default-calendars '()
   "List of calendars to fetch by default when writing to \='org-mode' file."
-  :type 'list
+  :type '(repeat string)
   :group 'maccalfw-org)
 
 (defcustom maccalfw-org-default-start-date-offset -7
@@ -65,28 +65,37 @@
           (nth 3 decoded)    ; day
           (nth 5 decoded)))) ; year
 
-(defun maccalfw-org--encode-calfw-date-time (event)
-  "Fetch the date-time from calfw EVENT and return \='encode-time' encoded value."
-  (let* ((date (calfw-event-start-date event))
-         (date (list (nth 1 date) (nth 0 date) (nth 2 date)))
-         (time (calfw-event-start-time event))
+(defun maccalfw-org--encode-calfw-date-time (date time)
+  "Parse calfw DATE and TIME from event and return \='encode-time' encoded value."
+  (let* ((date (list (nth 1 date) (nth 0 date) (nth 2 date)))
          (time (list 0 (nth 1 time) (nth 0 time)))
          (date-time (append time date))
          (encoded (encode-time date-time)))
     encoded))
 
+(defun maccalfw-org--encode-start-time (event)
+  "Return an Emacs-encoded form of a calfw EVENT start time."
+  (maccalfw-org--encode-calfw-date-time (calfw-event-start-date event) (calfw-event-start-time event)))
+
+(defun maccalfw-org--encode-end-time (event)
+  "Return an Emacs-encoded form of a calfw EVENT end time."
+  (maccalfw-org--encode-calfw-date-time (calfw-event-end-date event) (calfw-event-end-time event)))
+
 (defun maccalfw-org--event-to-org-entry (event &optional level)
   "Create a org entry for calfw EVENT with optional LEVEL."
   (let* ((title (calfw-event-title event))
-         (date-time (maccalfw-org--encode-calfw-date-time event))
          (level (if level level 1))
          (header (make-string level ?*)))
-    (format "%s %s\n<%s>\n"
+    (format "%s %s\n<%s>-<%s>\n"
             header
             title
             (format-time-string
              "%Y-%m-%d %a %H:%M"
-             date-time
+             (maccalfw-org--encode-start-time event)
+             nil)
+            (format-time-string
+             "%Y-%m-%d %a %H:%M"
+             (maccalfw-org--encode-end-time event)
              nil))))
 
 (defun maccalfw-org--generate-org-for-events (event-seq &optional level)
@@ -101,8 +110,7 @@
             (id (plist-get calendar :id))
             (name (plist-get calendar :title))
             (events (maccalfw--get-calendar-events id start-date end-date))
-            (org-events (maccalfw-org--generate-org-for-events events 2))
-            )
+            (org-events (maccalfw-org--generate-org-for-events events 2)))
        (format "* %s \n%s" name (string-join org-events "\n"))))
    calendars))
 
