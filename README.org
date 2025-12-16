@@ -9,10 +9,40 @@
 This package provides a list of commands to be able to fetch, add, modify and
 remove events to Apple's Calendar app.
 
-* Purpose of Fork
+* About This Fork
+** Purpose of Fork
 The purpose of [[https://github.com/FrederickGeek8/][my]] personal fork is to add some org-mode/agenda functionality to the [[https://github.com/haji-ali/maccalfw][original maccalfw project]]. /I/ deemed this functionality to be out-of-scope of the original project, although someone could pull in my changes in the future if they wanted to.
 
 *Do not rely on this fork.* I am not planning on maintaining it for anyone except for myself. I am not trying to replace the original project. Forking it was just easier for me.
+
+** Additional Setup
+If you use Doom Emacs (like I) a basic configuration can look like:
+In =config.el=
+#+begin_src emacs-lisp
+(use-package! maccalfw-org
+  :after org
+  :config
+  ;; Here I use advice because (org-agenda-files) is a function.
+  ;; If you have a static org-agenda-files variable, you could add maccalfw-org-output-file to it.
+  (advice-add 'org-agenda-files :filter-return (lambda (orig) (maccalfw-org-write-file) (push (expand-file-name maccalfw-org-output-file) orig)))
+
+  ;; These custom variables can also be set in :config
+  :custom
+  ;; Specify the default calendars to fetch
+  (maccalfw-org-default-calendars '("Calendar 1" "Household Events"))
+  ;; Specify the location to write the org-file to
+  (maccalfw-org-output-file (expand-file-name ".hidden/calendar.org" org-directory))
+  )
+#+end_src
+
+If you haven't already, set up your =packages.el= to point to my fork -- adding =maccalfw-org.el= to your ~:files~ list, if it exists.
+#+begin_src emacs-lisp
+(package! maccalfw :recipe
+  (
+   :host github
+   :repo "FrederickGeek8/org-maccalfw"
+                   :files ("maccalfw.el" "maccalfw-org.el" ("src" . "src"))))
+#+end_src
 
 * Installation
 =maccalfw= can be installed with the following =use-package= command, assuming
